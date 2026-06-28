@@ -230,6 +230,16 @@
       margin: 0 auto;
     }
 
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: repeat(2, 1fr); padding: 1rem; gap: 1rem; }
+      .portfolio-nav { display: none; }
+      .portfolio-header { padding: 1rem; }
+    }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
     .card {
       background: #0a0a0a;
       border: 1px solid var(--grey);
@@ -242,16 +252,6 @@
     .card:hover {
       border-color: var(--cyan);
       transform: translateY(-3px);
-    }
-
-    .card.featured {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    @media (max-width: 600px) {
-      .card.featured { grid-template-columns: 1fr; }
     }
 
     .card-thumb {
@@ -433,7 +433,8 @@
         <button class="filter-btn" data-filter="EDIT">EDIT</button>
         <button class="filter-btn" data-filter="ANIMATE">ANIMATE</button>
         <button class="filter-btn" data-filter="DESIGN">DESIGN</button>
-        <button class="filter-btn" data-filter="MIXED">MIXED</button>
+        <button class="filter-btn" data-filter="GAME">GAME</button>
+        <button class="filter-btn" data-filter="IDEA">IDEA</button>
       </div>
     </div>
     <div class="grid" id="grid"></div>
@@ -566,7 +567,7 @@
 
       sorted.forEach(project => {
         const card = document.createElement('div');
-        card.className = 'card' + (project.featured ? ' featured' : '');
+        card.className = 'card';
         card.onclick = () => openProject(project);
 
         const thumbHtml = project.thumbnail
@@ -574,7 +575,6 @@
           : `<div class="card-thumb-placeholder">NO PREVIEW</div>`;
 
         card.innerHTML = `
-          ${project.featured ? '<div class="card-featured-badge">FEATURED</div>' : ''}
           ${thumbHtml}
           <div class="card-body">
             <div class="card-category">${project.category}</div>

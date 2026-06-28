@@ -5,16 +5,30 @@
     "category": "FILM",
     "thumbnail": "images/cbbc-thumb.jpg",
     "description": "Featured work for CBBC. Filming, editing, the lot.",
-    "media": [],
     "featured": true
+  },
+  {
+    "id": "swards-logo",
+    "title": "SWARDS Logo",
+    "category": "DESIGN",
+    "thumbnail": "swards.png",
+    "description": "Brand design for SWARDS. Crossed swords, clean lines. Built for print and merch.",
+    "featured": false
+  },
+  {
+    "id": "swards-tee",
+    "title": "SWARDS T-Shirt",
+    "category": "DESIGN",
+    "thumbnail": "swards-tee.png",
+    "description": "T-shirt mockup for SWARDS. Taking the logo to product.",
+    "featured": false
   },
   {
     "id": "archive",
     "title": "From the Archive",
-    "category": "MIXED",
-    "thumbnail": "images/archive-thumb.jpg",
+    "category": "FILM",
+    "thumbnail": "",
     "description": "Early work. Where it all started.",
-    "media": [],
     "featured": false
   }
 ]
