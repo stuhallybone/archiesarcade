@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archie's Arcade</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.1) 2px,
+        rgba(0,0,0,0.1) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .pixel-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .archies {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(0.6rem, 2vw, 0.85rem);
+      color: rgba(0,255,255,0.4);
+      letter-spacing: 0.6em;
+      text-transform: uppercase;
+      margin-bottom: -1rem;
+    }
+
+    .logo {
+      width: min(580px, 90vw);
+      animation: flicker 5s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 94%, 100% { opacity: 1; }
+      95% { opacity: 0.3; }
+      96% { opacity: 1; }
+      97.5% { opacity: 0.15; }
+      98% { opacity: 1; }
+    }
+
+    .tagline {
+      font-size: 0.65rem;
+      color: #444;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+    }
+
+    .insert-coin {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.65rem;
+      color: #ff2d55;
+      letter-spacing: 0.12em;
+      animation: blink 1.2s step-end infinite;
+      margin-top: 0.5rem;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .corner {
+      position: fixed;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      color: #1a1a1a;
+      letter-spacing: 0.1em;
+    }
+    .tl { top: 1.2rem; left: 1.2rem; }
+    .tr { top: 1.2rem; right: 1.2rem; }
+    .bl { bottom: 1.2rem; left: 1.2rem; }
+    .br { bottom: 1.2rem; right: 1.2rem; }
+
+    .hiscore {
+      position: fixed;
+      top: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      color: #1a1a1a;
+      letter-spacing: 0.15em;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="pixel-grid"></div>
+  <div class="scanlines"></div>
+
+  <div class="corner tl">P1</div>
+  <div class="corner tr">P2</div>
+  <div class="corner bl">&#169; 2025</div>
+  <div class="corner br">v0.1</div>
+  <div class="hiscore">HI-SCORE &nbsp; 000000</div>
+
+  <div class="container">
+    <div class="archies">Archie's</div>
+    <img class="logo" src="archiesarcade-logo.png" alt="Archie's Arcade" />
+    <div class="tagline">Film &nbsp;&middot;&nbsp; Edit &nbsp;&middot;&nbsp; Animate &nbsp;&middot;&nbsp; Create</div>
+    <div class="insert-coin">&gt; INSERT COIN TO CONTINUE &lt;</div>
+  </div>
+</body>
+</html>
