@@ -8,19 +8,12 @@
     "featured": true
   },
   {
-    "id": "swards-logo",
-    "title": "SWARDS Logo",
-    "category": "DESIGN",
-    "thumbnail": "swards.png",
-    "description": "Brand design for SWARDS. Crossed swords, clean lines. Built for print and merch.",
-    "featured": false
-  },
-  {
     "id": "swards-tee",
     "title": "SWARDS T-Shirt",
     "category": "DESIGN",
     "thumbnail": "swards-tee.png",
-    "description": "T-shirt mockup for SWARDS. Taking the logo to product.",
+    "description": "T-shirt design for SWARDS. Crossed swords, clean lines. Built for print.",
+    "image": "swards.png",
     "featured": false
   },
   {

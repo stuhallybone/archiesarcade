@@ -614,6 +614,8 @@
         mediaEl.innerHTML = `<iframe src="https://player.vimeo.com/video/${project.vimeo}" allowfullscreen></iframe>`;
       } else if (project.youtube) {
         mediaEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${project.youtube}" allowfullscreen></iframe>`;
+      } else if (project.image) {
+        mediaEl.innerHTML = `<img src="${project.image}" alt="${project.title}">`;
       } else if (project.thumbnail) {
         mediaEl.innerHTML = `<img src="${project.thumbnail}" alt="${project.title}">`;
       }
