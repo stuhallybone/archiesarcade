@@ -1,0 +1,20 @@
+[
+  {
+    "id": "cbbc-showreel",
+    "title": "CBBC Showreel",
+    "category": "FILM",
+    "thumbnail": "images/cbbc-thumb.jpg",
+    "description": "Featured work for CBBC. Filming, editing, the lot.",
+    "media": [],
+    "featured": true
+  },
+  {
+    "id": "archive",
+    "title": "From the Archive",
+    "category": "MIXED",
+    "thumbnail": "images/archive-thumb.jpg",
+    "description": "Early work. Where it all started.",
+    "media": [],
+    "featured": false
+  }
+]

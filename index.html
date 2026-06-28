@@ -4,302 +4,615 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Archie's Arcade</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap');
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: #000;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      font-family: 'Space Mono', monospace;
-      cursor: pointer;
-      user-select: none;
+    :root {
+      --black: #000000;
+      --cyan: #00e5ff;
+      --red: #ff1a1a;
+      --white: #ffffff;
+      --grey: #444444;
+      --dim: #888888;
     }
 
-    #aa-scanlines {
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* SCANLINES */
+    .scanlines {
       position: fixed;
       inset: 0;
       background: repeating-linear-gradient(
         0deg, transparent, transparent 2px,
-        rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px
+        rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
       );
       pointer-events: none;
-      z-index: 10;
+      z-index: 100;
     }
 
-    #aa-grid {
+    /* SCREENS */
+    .screen {
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(0,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,255,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-    }
-
-    #aa-content {
-      text-align: center;
-      padding: 2rem;
-      position: relative;
-      z-index: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.5rem;
+      justify-content: center;
       transition: opacity 0.4s ease;
     }
+    .screen.hidden { opacity: 0; pointer-events: none; }
 
-    #aa-archies {
+    /* COIN SCREEN */
+    #coin-screen {
+      gap: 2rem;
+    }
+
+    .logo-wrap {
+      text-align: center;
+    }
+
+    .logo-wrap img {
+      width: min(480px, 90vw);
+      image-rendering: pixelated;
+    }
+
+    .tagline {
       font-family: 'Press Start 2P', monospace;
-      font-size: clamp(0.6rem, 2vw, 0.85rem);
-      color: rgba(0,255,255,0.4);
-      letter-spacing: 0.6em;
-      text-transform: uppercase;
-      margin-bottom: -1rem;
+      font-size: clamp(7px, 1.5vw, 10px);
+      color: var(--dim);
+      letter-spacing: 0.3em;
+      text-align: center;
     }
 
-    #aa-logo {
-      width: min(480px, 85vw);
-      animation: aa-flicker 5s infinite;
-    }
-
-    @keyframes aa-flicker {
-      0%, 94%, 100% { opacity: 1; }
-      95% { opacity: 0.3; }
-      96% { opacity: 1; }
-      97.5% { opacity: 0.15; }
-      98% { opacity: 1; }
-    }
-
-    #aa-tagline {
-      font-size: 0.65rem;
-      color: #444;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-    }
-
-    #aa-coin-prompt {
+    .coin-prompt {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.65rem;
-      color: #ff2d55;
-      letter-spacing: 0.12em;
-      animation: aa-blink 1.2s step-end infinite;
-      margin-top: 0.5rem;
+      font-size: clamp(9px, 2vw, 13px);
+      color: var(--red);
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      user-select: none;
+      animation: blink 1.2s step-end infinite;
+      margin-top: 1rem;
     }
+    .coin-prompt:hover { color: var(--cyan); }
 
-    @keyframes aa-blink {
+    @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
 
-    .corner {
+    /* COIN ANIMATION */
+    .coin {
       position: fixed;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.45rem;
-      color: #1a1a1a;
-      letter-spacing: 0.1em;
-      z-index: 2;
-    }
-    .tl { top: 1.2rem; left: 1.2rem; }
-    .tr { top: 1.2rem; right: 1.2rem; }
-    .bl { bottom: 1.2rem; left: 1.2rem; }
-    .br { bottom: 1.2rem; right: 1.2rem; }
-
-    #aa-hiscore {
-      position: fixed;
-      top: 1.2rem; left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.45rem;
-      color: #1a1a1a;
-      letter-spacing: 0.15em;
-      z-index: 2;
-      white-space: nowrap;
-    }
-
-    .aa-coin {
-      position: absolute;
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #FFD700;
-      border: 3px solid #FFA500;
-      z-index: 100;
+      border: 3px solid var(--cyan);
+      background: transparent;
       pointer-events: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
-      color: #B8860B;
-      animation: aa-coin-drop 0.55s ease-in forwards;
-    }
-
-    @keyframes aa-coin-drop {
-      0%   { transform: translateY(0) scale(1); opacity: 1; }
-      60%  { transform: translateY(55px) scale(0.9); opacity: 1; }
-      80%  { transform: translateY(50px) scale(1.1); opacity: 1; }
-      100% { transform: translateY(65px) scale(0); opacity: 0; }
-    }
-
-    .aa-score-pop {
-      position: absolute;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.5rem;
-      color: #FFD700;
-      z-index: 101;
-      pointer-events: none;
-      animation: aa-score-pop 0.7s ease-out forwards;
-    }
-
-    @keyframes aa-score-pop {
-      0%   { transform: translateY(0) scale(1); opacity: 1; }
-      50%  { transform: translateY(-18px) scale(1.2); opacity: 1; }
-      100% { transform: translateY(-36px) scale(0.8); opacity: 0; }
-    }
-
-    #aa-flash {
-      position: fixed;
-      inset: 0;
-      background: #00ffff;
       z-index: 200;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s ease;
+      animation: coin-drop 0.6s ease-in forwards;
     }
 
-    #aa-next {
+    @keyframes coin-drop {
+      0%   { transform: translateY(0) scale(1); opacity: 1; }
+      60%  { transform: translateY(80px) scale(0.9); opacity: 0.8; }
+      100% { transform: translateY(160px) scale(0.3); opacity: 0; }
+    }
+
+    .credits-display {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--grey);
+      letter-spacing: 0.2em;
       position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 150;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .hiscore-display {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--grey);
+      letter-spacing: 0.2em;
+      position: fixed;
+      top: 1.5rem;
+      right: 2rem;
+    }
+
+    /* BOOT SCREEN */
+    #boot-screen {
+      gap: 0.6rem;
+    }
+
+    .boot-line {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(7px, 1.2vw, 9px);
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      opacity: 0;
+      width: min(500px, 90vw);
+    }
+
+    .boot-line.dim { color: var(--dim); }
+    .boot-line.ok::after { content: '  OK'; color: var(--cyan); }
+    .boot-line.show { opacity: 1; }
+
+    .boot-bar-wrap {
+      width: min(500px, 90vw);
+      height: 6px;
+      background: var(--grey);
+      margin-top: 1.2rem;
+      opacity: 0;
+    }
+    .boot-bar-wrap.show { opacity: 1; }
+
+    .boot-bar {
+      height: 100%;
+      background: var(--cyan);
+      width: 0%;
+      transition: width 0.8s ease;
+    }
+
+    /* PORTFOLIO SCREEN */
+    #portfolio-screen {
+      position: relative;
+      overflow-y: auto;
+      display: block;
+      padding: 0;
+    }
+
+    .portfolio-header {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--grey);
+      position: sticky;
+      top: 0;
+      background: var(--black);
+      z-index: 10;
+    }
+
+    .portfolio-logo {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(8px, 1.5vw, 11px);
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      cursor: pointer;
+    }
+    .portfolio-logo span { color: var(--red); }
+
+    .portfolio-nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .filter-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #0a0a0a;
+      border: 1px solid var(--grey);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    .card.featured {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 600px) {
+      .card.featured { grid-template-columns: 1fr; }
+    }
+
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.7);
+      transition: filter 0.3s;
+      background: #111;
+    }
+    .card:hover .card-thumb { filter: saturate(1); }
+
+    .card-thumb-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #111;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1.5rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
-
-    #aa-next.visible {
-      opacity: 1;
-    }
-
-    #aa-next-logo {
-      width: min(380px, 80vw);
-    }
-
-    #aa-loading {
+      color: var(--grey);
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.55rem;
-      color: rgba(0,255,255,0.6);
+      font-size: 8px;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .card-category {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--cyan);
       letter-spacing: 0.2em;
-      animation: aa-blink 0.7s step-end infinite;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(9px, 1.5vw, 11px);
+      color: var(--white);
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-desc {
+      font-size: 11px;
+      color: var(--dim);
+      line-height: 1.7;
+    }
+
+    .card-featured-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      background: var(--red);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--white);
+      padding: 0.3rem 0.5rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--grey);
+    }
+    .empty-state p {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      line-height: 2;
+    }
+
+    /* PROJECT PAGE */
+    #project-screen {
+      overflow-y: auto;
+      display: block;
+      padding: 0;
+    }
+
+    .project-back {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--cyan);
+      cursor: pointer;
+      padding: 1.5rem 2rem;
+      display: inline-block;
+      letter-spacing: 0.1em;
+    }
+    .project-back:hover { color: var(--white); }
+
+    .project-media {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .project-media img,
+    .project-media video,
+    .project-media iframe {
+      width: 100%;
+      display: block;
+      background: #111;
+    }
+
+    .project-media iframe { aspect-ratio: 16/9; border: none; }
+
+    .project-info {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .project-category {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--cyan);
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+
+    .project-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(14px, 3vw, 22px);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-desc {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.9;
+      max-width: 640px;
     }
   </style>
 </head>
 <body>
-  <div id="aa-grid"></div>
-  <div id="aa-scanlines"></div>
-  <div id="aa-flash"></div>
+  <div class="scanlines"></div>
 
-  <div class="corner tl">P1</div>
-  <div class="corner tr">P2</div>
-  <div class="corner bl">&#169; 2025</div>
-  <div class="corner br">v0.1</div>
-  <div id="aa-hiscore">HI-SCORE &nbsp; 000000</div>
+  <!-- COIN INSERT SCREEN -->
+  <div class="screen" id="coin-screen">
+    <div class="hiscore-display">HI-SCORE &nbsp; <span id="hiscore">000000</span></div>
 
-  <div id="aa-content">
-    <div id="aa-archies">Archie's</div>
-    <img id="aa-logo" src="archiesarcade-logo.png" alt="Archie's Arcade" />
-    <div id="aa-tagline">Film &nbsp;&middot;&nbsp; Edit &nbsp;&middot;&nbsp; Animate &nbsp;&middot;&nbsp; Create</div>
-    <div id="aa-coin-prompt">&gt; CLICK TO INSERT COIN &lt;</div>
+    <div class="logo-wrap">
+      <img src="images/logo.png" alt="Archie's Arcade" onerror="this.style.display='none'">
+      <div style="font-family:'Press Start 2P',monospace;font-size:clamp(20px,5vw,36px);color:#00e5ff;letter-spacing:0.05em;display:none" id="logo-fallback">ARCHIE'S<br><span style="color:#ff1a1a">ARCADE</span></div>
+    </div>
+
+    <div class="tagline">FILM &nbsp;·&nbsp; EDIT &nbsp;·&nbsp; ANIMATE &nbsp;·&nbsp; CREATE</div>
+
+    <div class="coin-prompt" id="coin-btn">&gt; CLICK TO INSERT COIN &lt;</div>
+
+    <div class="credits-display">CREDITS &nbsp; <span id="credits">00</span></div>
   </div>
 
-  <div id="aa-next">
-    <img id="aa-next-logo" src="archiesarcade-logo.png" alt="Archie's Arcade" />
-    <div id="aa-loading">LOADING...</div>
+  <!-- BOOT SCREEN -->
+  <div class="screen hidden" id="boot-screen">
+    <div class="boot-line dim" id="b0">ARCHIE'S ARCADE v1.0</div>
+    <div class="boot-line ok" id="b1">LOADING ASSETS</div>
+    <div class="boot-line ok" id="b2">INITIALISING GRID</div>
+    <div class="boot-line ok" id="b3">CALIBRATING PIXEL ENGINE</div>
+    <div class="boot-line" id="b4" style="color:var(--cyan)">READY</div>
+    <div class="boot-bar-wrap" id="boot-bar-wrap">
+      <div class="boot-bar" id="boot-bar"></div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO SCREEN -->
+  <div class="screen hidden" id="portfolio-screen">
+    <div class="portfolio-header">
+      <div class="portfolio-logo" onclick="showCoinScreen()">ARCHIE'S <span>ARCADE</span></div>
+      <div class="portfolio-nav">
+        <button class="filter-btn active" data-filter="ALL">ALL</button>
+        <button class="filter-btn" data-filter="FILM">FILM</button>
+        <button class="filter-btn" data-filter="EDIT">EDIT</button>
+        <button class="filter-btn" data-filter="ANIMATE">ANIMATE</button>
+        <button class="filter-btn" data-filter="DESIGN">DESIGN</button>
+        <button class="filter-btn" data-filter="MIXED">MIXED</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <!-- PROJECT SCREEN -->
+  <div class="screen hidden" id="project-screen">
+    <div class="project-back" onclick="showPortfolio()">&#8592; BACK TO ARCADE</div>
+    <div class="project-media" id="project-media"></div>
+    <div class="project-info">
+      <div class="project-category" id="project-category"></div>
+      <div class="project-title" id="project-title"></div>
+      <div class="project-desc" id="project-desc"></div>
+    </div>
   </div>
 
   <script>
-    (function() {
-      const body = document.body;
-      const content = document.getElementById('aa-content');
-      const flash = document.getElementById('aa-flash');
-      const next = document.getElementById('aa-next');
-      let used = false;
+    let credits = 0;
+    let projects = [];
+    let currentFilter = 'ALL';
 
-      function playInsertCoin() {
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const t = ctx.currentTime;
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(523, t);
-          osc.frequency.setValueAtTime(659, t + 0.06);
-          osc.frequency.setValueAtTime(784, t + 0.12);
-          osc.frequency.setValueAtTime(1047, t + 0.18);
-          gain.gain.setValueAtTime(0.15, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-          osc.start(t);
-          osc.stop(t + 0.35);
-        } catch(e) {}
-      }
+    // Load projects
+    fetch('projects.json')
+      .then(r => r.json())
+      .then(data => { projects = data; })
+      .catch(() => { projects = []; });
 
-      function spawnCoin(x, y) {
-        const coin = document.createElement('div');
-        coin.className = 'aa-coin';
-        coin.textContent = '$';
-        coin.style.left = (x - 14) + 'px';
-        coin.style.top = (y - 14) + 'px';
-        body.appendChild(coin);
-        setTimeout(() => coin.remove(), 600);
-
-        const pop = document.createElement('div');
-        pop.className = 'aa-score-pop';
-        pop.textContent = '+CREDIT';
-        pop.style.left = (x - 24) + 'px';
-        pop.style.top = (y - 20) + 'px';
-        body.appendChild(pop);
-        setTimeout(() => pop.remove(), 750);
-      }
-
-      body.addEventListener('click', function(e) {
-        if (used) return;
-        used = true;
-
-        spawnCoin(e.clientX, e.clientY);
-        playInsertCoin();
-
-        setTimeout(() => {
-          content.style.opacity = '0';
-          content.style.pointerEvents = 'none';
-        }, 350);
-
-        setTimeout(() => {
-          flash.style.opacity = '0.7';
-          setTimeout(() => { flash.style.opacity = '0'; }, 150);
-        }, 550);
-
-        setTimeout(() => {
-          next.classList.add('visible');
-          // When portfolio is ready, replace the line above with:
-          // window.location.href = 'portfolio.html';
-        }, 700);
+    // Coin sound
+    function playCoinkSound() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [523, 659, 784, 1047];
+      notes.forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = freq;
+        o.type = 'square';
+        g.gain.setValueAtTime(0.08, ctx.currentTime + i * 0.07);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.07 + 0.1);
+        o.start(ctx.currentTime + i * 0.07);
+        o.stop(ctx.currentTime + i * 0.07 + 0.15);
       });
-    })();
+    }
+
+    // Coin drop animation
+    function spawnCoin(x, y) {
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      coin.style.left = (x - 14) + 'px';
+      coin.style.top = (y - 14) + 'px';
+      document.body.appendChild(coin);
+      setTimeout(() => coin.remove(), 700);
+    }
+
+    // Insert coin
+    document.getElementById('coin-btn').addEventListener('click', (e) => {
+      spawnCoin(e.clientX, e.clientY);
+      playCoinkSound();
+      credits++;
+      document.getElementById('credits').textContent = String(credits).padStart(2, '0');
+
+      setTimeout(() => startBoot(), 600);
+    });
+
+    // Logo fallback
+    const logoImg = document.querySelector('.logo-wrap img');
+    logoImg.addEventListener('error', () => {
+      logoImg.style.display = 'none';
+      document.getElementById('logo-fallback').style.display = 'block';
+    });
+
+    // Boot sequence
+    function startBoot() {
+      const coinScreen = document.getElementById('coin-screen');
+      const bootScreen = document.getElementById('boot-screen');
+      coinScreen.classList.add('hidden');
+      bootScreen.classList.remove('hidden');
+
+      const lines = ['b0','b1','b2','b3','b4'];
+      lines.forEach((id, i) => {
+        setTimeout(() => {
+          document.getElementById(id).classList.add('show');
+        }, i * 180);
+      });
+
+      const barWrap = document.getElementById('boot-bar-wrap');
+      const bar = document.getElementById('boot-bar');
+      setTimeout(() => {
+        barWrap.classList.add('show');
+        setTimeout(() => { bar.style.width = '100%'; }, 50);
+      }, lines.length * 180);
+
+      setTimeout(() => {
+        bootScreen.classList.add('hidden');
+        showPortfolio();
+      }, lines.length * 180 + 1000);
+    }
+
+    // Show portfolio
+    function showPortfolio() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+      const ps = document.getElementById('portfolio-screen');
+      ps.classList.remove('hidden');
+      ps.scrollTop = 0;
+      renderGrid(currentFilter);
+    }
+
+    // Show coin screen
+    function showCoinScreen() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+      document.getElementById('coin-screen').classList.remove('hidden');
+    }
+
+    // Render grid
+    function renderGrid(filter) {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      const filtered = filter === 'ALL'
+        ? projects
+        : projects.filter(p => p.category === filter);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><p>NO PROJECTS YET.<br><br>INSERT COIN TO<br>ADD YOUR FIRST ONE.</p></div>';
+        return;
+      }
+
+      // Featured first
+      const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+
+      sorted.forEach(project => {
+        const card = document.createElement('div');
+        card.className = 'card' + (project.featured ? ' featured' : '');
+        card.onclick = () => openProject(project);
+
+        const thumbHtml = project.thumbnail
+          ? `<img class="card-thumb" src="${project.thumbnail}" alt="${project.title}" loading="lazy">`
+          : `<div class="card-thumb-placeholder">NO PREVIEW</div>`;
+
+        card.innerHTML = `
+          ${project.featured ? '<div class="card-featured-badge">FEATURED</div>' : ''}
+          ${thumbHtml}
+          <div class="card-body">
+            <div class="card-category">${project.category}</div>
+            <div class="card-title">${project.title}</div>
+            <div class="card-desc">${project.description}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderGrid(currentFilter);
+      });
+    });
+
+    // Open project
+    function openProject(project) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+      const ps = document.getElementById('project-screen');
+      ps.classList.remove('hidden');
+      ps.scrollTop = 0;
+
+      document.getElementById('project-category').textContent = project.category;
+      document.getElementById('project-title').textContent = project.title;
+      document.getElementById('project-desc').textContent = project.description;
+
+      const mediaEl = document.getElementById('project-media');
+      mediaEl.innerHTML = '';
+
+      if (project.vimeo) {
+        mediaEl.innerHTML = `<iframe src="https://player.vimeo.com/video/${project.vimeo}" allowfullscreen></iframe>`;
+      } else if (project.youtube) {
+        mediaEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${project.youtube}" allowfullscreen></iframe>`;
+      } else if (project.thumbnail) {
+        mediaEl.innerHTML = `<img src="${project.thumbnail}" alt="${project.title}">`;
+      }
+    }
   </script>
 </body>
 </html>
