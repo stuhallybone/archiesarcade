@@ -11,31 +11,30 @@
 
     body {
       background: #000;
-      color: #fff;
-      font-family: 'Space Mono', monospace;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
       overflow: hidden;
+      font-family: 'Space Mono', monospace;
+      cursor: pointer;
+      user-select: none;
     }
 
-    .scanlines {
+    #aa-scanlines {
       position: fixed;
       inset: 0;
       background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.1) 2px,
-        rgba(0,0,0,0.1) 4px
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px
       );
       pointer-events: none;
       z-index: 10;
     }
 
-    .pixel-grid {
+    #aa-grid {
       position: fixed;
       inset: 0;
       background-image:
@@ -45,7 +44,7 @@
       pointer-events: none;
     }
 
-    .container {
+    #aa-content {
       text-align: center;
       padding: 2rem;
       position: relative;
@@ -54,9 +53,10 @@
       flex-direction: column;
       align-items: center;
       gap: 1.5rem;
+      transition: opacity 0.4s ease;
     }
 
-    .archies {
+    #aa-archies {
       font-family: 'Press Start 2P', monospace;
       font-size: clamp(0.6rem, 2vw, 0.85rem);
       color: rgba(0,255,255,0.4);
@@ -65,12 +65,12 @@
       margin-bottom: -1rem;
     }
 
-    .logo {
-      width: min(580px, 90vw);
-      animation: flicker 5s infinite;
+    #aa-logo {
+      width: min(480px, 85vw);
+      animation: aa-flicker 5s infinite;
     }
 
-    @keyframes flicker {
+    @keyframes aa-flicker {
       0%, 94%, 100% { opacity: 1; }
       95% { opacity: 0.3; }
       96% { opacity: 1; }
@@ -78,23 +78,23 @@
       98% { opacity: 1; }
     }
 
-    .tagline {
+    #aa-tagline {
       font-size: 0.65rem;
       color: #444;
       letter-spacing: 0.25em;
       text-transform: uppercase;
     }
 
-    .insert-coin {
+    #aa-coin-prompt {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.65rem;
       color: #ff2d55;
       letter-spacing: 0.12em;
-      animation: blink 1.2s step-end infinite;
+      animation: aa-blink 1.2s step-end infinite;
       margin-top: 0.5rem;
     }
 
-    @keyframes blink {
+    @keyframes aa-blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
@@ -105,40 +105,201 @@
       font-size: 0.45rem;
       color: #1a1a1a;
       letter-spacing: 0.1em;
+      z-index: 2;
     }
     .tl { top: 1.2rem; left: 1.2rem; }
     .tr { top: 1.2rem; right: 1.2rem; }
     .bl { bottom: 1.2rem; left: 1.2rem; }
     .br { bottom: 1.2rem; right: 1.2rem; }
 
-    .hiscore {
+    #aa-hiscore {
       position: fixed;
-      top: 1.2rem;
-      left: 50%;
+      top: 1.2rem; left: 50%;
       transform: translateX(-50%);
       font-family: 'Press Start 2P', monospace;
       font-size: 0.45rem;
       color: #1a1a1a;
       letter-spacing: 0.15em;
+      z-index: 2;
       white-space: nowrap;
+    }
+
+    .aa-coin {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #FFD700;
+      border: 3px solid #FFA500;
+      z-index: 100;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: #B8860B;
+      animation: aa-coin-drop 0.55s ease-in forwards;
+    }
+
+    @keyframes aa-coin-drop {
+      0%   { transform: translateY(0) scale(1); opacity: 1; }
+      60%  { transform: translateY(55px) scale(0.9); opacity: 1; }
+      80%  { transform: translateY(50px) scale(1.1); opacity: 1; }
+      100% { transform: translateY(65px) scale(0); opacity: 0; }
+    }
+
+    .aa-score-pop {
+      position: absolute;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      color: #FFD700;
+      z-index: 101;
+      pointer-events: none;
+      animation: aa-score-pop 0.7s ease-out forwards;
+    }
+
+    @keyframes aa-score-pop {
+      0%   { transform: translateY(0) scale(1); opacity: 1; }
+      50%  { transform: translateY(-18px) scale(1.2); opacity: 1; }
+      100% { transform: translateY(-36px) scale(0.8); opacity: 0; }
+    }
+
+    #aa-flash {
+      position: fixed;
+      inset: 0;
+      background: #00ffff;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+
+    #aa-next {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #aa-next.visible {
+      opacity: 1;
+    }
+
+    #aa-next-logo {
+      width: min(380px, 80vw);
+    }
+
+    #aa-loading {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      color: rgba(0,255,255,0.6);
+      letter-spacing: 0.2em;
+      animation: aa-blink 0.7s step-end infinite;
     }
   </style>
 </head>
 <body>
-  <div class="pixel-grid"></div>
-  <div class="scanlines"></div>
+  <div id="aa-grid"></div>
+  <div id="aa-scanlines"></div>
+  <div id="aa-flash"></div>
 
   <div class="corner tl">P1</div>
   <div class="corner tr">P2</div>
   <div class="corner bl">&#169; 2025</div>
   <div class="corner br">v0.1</div>
-  <div class="hiscore">HI-SCORE &nbsp; 000000</div>
+  <div id="aa-hiscore">HI-SCORE &nbsp; 000000</div>
 
-  <div class="container">
-    <div class="archies">Archie's</div>
-    <img class="logo" src="archiesarcade-logo.png" alt="Archie's Arcade" />
-    <div class="tagline">Film &nbsp;&middot;&nbsp; Edit &nbsp;&middot;&nbsp; Animate &nbsp;&middot;&nbsp; Create</div>
-    <div class="insert-coin">&gt; INSERT COIN TO CONTINUE &lt;</div>
+  <div id="aa-content">
+    <div id="aa-archies">Archie's</div>
+    <img id="aa-logo" src="archiesarcade-logo.png" alt="Archie's Arcade" />
+    <div id="aa-tagline">Film &nbsp;&middot;&nbsp; Edit &nbsp;&middot;&nbsp; Animate &nbsp;&middot;&nbsp; Create</div>
+    <div id="aa-coin-prompt">&gt; CLICK TO INSERT COIN &lt;</div>
   </div>
+
+  <div id="aa-next">
+    <img id="aa-next-logo" src="archiesarcade-logo.png" alt="Archie's Arcade" />
+    <div id="aa-loading">LOADING...</div>
+  </div>
+
+  <script>
+    (function() {
+      const body = document.body;
+      const content = document.getElementById('aa-content');
+      const flash = document.getElementById('aa-flash');
+      const next = document.getElementById('aa-next');
+      let used = false;
+
+      function playInsertCoin() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const t = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(523, t);
+          osc.frequency.setValueAtTime(659, t + 0.06);
+          osc.frequency.setValueAtTime(784, t + 0.12);
+          osc.frequency.setValueAtTime(1047, t + 0.18);
+          gain.gain.setValueAtTime(0.15, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+          osc.start(t);
+          osc.stop(t + 0.35);
+        } catch(e) {}
+      }
+
+      function spawnCoin(x, y) {
+        const coin = document.createElement('div');
+        coin.className = 'aa-coin';
+        coin.textContent = '$';
+        coin.style.left = (x - 14) + 'px';
+        coin.style.top = (y - 14) + 'px';
+        body.appendChild(coin);
+        setTimeout(() => coin.remove(), 600);
+
+        const pop = document.createElement('div');
+        pop.className = 'aa-score-pop';
+        pop.textContent = '+CREDIT';
+        pop.style.left = (x - 24) + 'px';
+        pop.style.top = (y - 20) + 'px';
+        body.appendChild(pop);
+        setTimeout(() => pop.remove(), 750);
+      }
+
+      body.addEventListener('click', function(e) {
+        if (used) return;
+        used = true;
+
+        spawnCoin(e.clientX, e.clientY);
+        playInsertCoin();
+
+        setTimeout(() => {
+          content.style.opacity = '0';
+          content.style.pointerEvents = 'none';
+        }, 350);
+
+        setTimeout(() => {
+          flash.style.opacity = '0.7';
+          setTimeout(() => { flash.style.opacity = '0'; }, 150);
+        }, 550);
+
+        setTimeout(() => {
+          next.classList.add('visible');
+          // When portfolio is ready, replace the line above with:
+          // window.location.href = 'portfolio.html';
+        }, 700);
+      });
+    })();
+  </script>
 </body>
 </html>
