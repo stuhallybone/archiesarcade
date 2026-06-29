@@ -7,10 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --black: #000000; --cyan: #00e5ff; --red: #ff1a1a;
-      --green: #00ff88; --white: #ffffff; --grey: #333333; --dim: #666666;
-    }
+    :root { --black: #000000; --cyan: #00e5ff; --red: #ff1a1a; --green: #00ff88; --white: #ffffff; --grey: #333333; --dim: #666666; }
     body { background: var(--black); color: var(--white); font-family: 'Space Mono', monospace; min-height: 100vh; padding: 2rem; }
 
     #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 2rem; }
@@ -66,10 +63,11 @@
     .row-info { flex: 1; min-width: 0; }
     .row-title { font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem; }
     .row-category { font-family: 'Press Start 2P', monospace; font-size: 6px; color: var(--cyan); }
-    .row-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
-    .toggle-btn, .delete-btn { font-family: 'Press Start 2P', monospace; font-size: 6px; padding: 0.3rem 0.5rem; cursor: pointer; border: none; letter-spacing: 0.05em; }
+    .row-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+    .action-btn { font-family: 'Press Start 2P', monospace; font-size: 6px; padding: 0.3rem 0.5rem; cursor: pointer; border: none; letter-spacing: 0.05em; }
     .toggle-btn { background: var(--grey); color: var(--white); }
     .toggle-btn.on { background: var(--green); color: var(--black); }
+    .edit-btn { background: var(--cyan); color: var(--black); }
     .delete-btn { background: var(--red); color: var(--white); }
 
     .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0a0a0a; border-top: 1px solid var(--grey); padding: 1rem 2rem; display: none; align-items: center; justify-content: space-between; z-index: 50; }
@@ -81,10 +79,10 @@
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 2rem; }
     .modal-overlay.show { display: flex; }
-    .modal { background: #0a0a0a; border: 1px solid var(--cyan); padding: 2rem; width: min(400px, 100%); }
-    .modal-title { font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--red); margin-bottom: 1rem; }
+    .modal { background: #0a0a0a; border: 1px solid var(--cyan); padding: 2rem; width: min(500px, 100%); max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--cyan); margin-bottom: 1.5rem; }
     .modal-text { font-size: 12px; color: var(--dim); line-height: 1.8; margin-bottom: 1.5rem; }
-    .modal-actions { display: flex; gap: 1rem; }
+    .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
 
     .toast { position: fixed; top: 1.5rem; right: 1.5rem; font-family: 'Press Start 2P', monospace; font-size: 8px; padding: 0.75rem 1rem; letter-spacing: 0.1em; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; }
@@ -113,11 +111,11 @@
   </div>
   <div class="admin-grid">
     <div class="panel">
-      <div class="panel-title">ADD NEW PROJECT</div>
+      <div class="panel-title" id="form-title">ADD NEW PROJECT</div>
       <div class="field">
         <label>THUMBNAIL / IMAGE</label>
         <div class="upload-area" id="upload-area">
-          <input type="file" id="file-input" accept="image/*,video/*">
+          <input type="file" id="file-input" accept="image/*">
           <img class="upload-preview" id="upload-preview">
           <div class="upload-text" id="upload-text">DROP FILE HERE<br>OR CLICK TO BROWSE</div>
           <div class="upload-filename" id="upload-filename"></div>
@@ -139,7 +137,10 @@
       <div class="field"><label>DESCRIPTION</label><textarea id="new-desc" placeholder="Tell them about it..."></textarea></div>
       <div class="field"><label>VIMEO ID (OPTIONAL)</label><input type="text" id="new-vimeo" placeholder="e.g. 123456789"></div>
       <div class="field"><label>YOUTUBE ID (OPTIONAL)</label><input type="text" id="new-yt" placeholder="e.g. dQw4w9WgXcQ"></div>
-      <button class="btn btn-cyan" style="width:100%;margin-top:0.5rem" id="add-btn" onclick="addProject()">ADD TO ARCADE</button>
+      <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
+        <button class="btn btn-cyan" style="flex:1" id="add-btn" onclick="submitForm()">ADD TO ARCADE</button>
+        <button class="btn btn-grey" id="cancel-btn" onclick="cancelEdit()" style="display:none">CANCEL</button>
+      </div>
     </div>
     <div class="panel">
       <div class="panel-title">MANAGE PROJECTS</div>
@@ -161,7 +162,7 @@
     <div class="modal-title">DELETE PROJECT?</div>
     <div class="modal-text" id="del-text"></div>
     <div class="modal-actions">
-      <button class="btn btn-grey" onclick="closeModal()">CANCEL</button>
+      <button class="btn btn-grey" onclick="closeModal('del-modal')">CANCEL</button>
       <button class="btn btn-red" onclick="confirmDelete()">DELETE</button>
     </div>
   </div>
@@ -176,9 +177,8 @@
   let deleteIndex = null;
   let dragSrcIndex = null;
   let uploadedFile = null;
-  let uploadedUrl = null;
+  let editingIndex = null;
 
-  // LOGIN
   function login() {
     password = document.getElementById('pw').value;
     document.getElementById('pw').value = '';
@@ -188,11 +188,7 @@
     })
     .then(r => r.json())
     .then(data => {
-      if (data.error) {
-        document.getElementById('login-err').style.display = 'block';
-        password = '';
-        return;
-      }
+      if (data.error) { document.getElementById('login-err').style.display = 'block'; password = ''; return; }
       projects = data.projects || [];
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('admin-screen').style.display = 'block';
@@ -205,7 +201,6 @@
 
   document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 
-  // LOAD
   function loadProjects() {
     fetch('/.netlify/functions/admin', {
       method: 'POST',
@@ -217,10 +212,10 @@
       hasChanges = false;
       renderList();
       setStatus('ALL SAVED', 'saved');
+      cancelEdit();
     });
   }
 
-  // RENDER
   function renderList() {
     const list = document.getElementById('projects-list');
     list.innerHTML = '';
@@ -242,8 +237,9 @@
           <div class="row-category">${p.category}</div>
         </div>
         <div class="row-actions">
-          <button class="toggle-btn ${p.hidden ? '' : 'on'}" onclick="toggleProject(${i})">${p.hidden ? 'OFF' : 'ON'}</button>
-          <button class="delete-btn" onclick="promptDelete(${i})">DEL</button>
+          <button class="action-btn toggle-btn ${p.hidden ? '' : 'on'}" onclick="toggleProject(${i})">${p.hidden ? 'OFF' : 'ON'}</button>
+          <button class="action-btn edit-btn" onclick="editProject(${i})">EDIT</button>
+          <button class="action-btn delete-btn" onclick="promptDelete(${i})">DEL</button>
         </div>`;
       row.addEventListener('dragstart', () => { dragSrcIndex = i; setTimeout(() => row.classList.add('dragging'), 0); });
       row.addEventListener('dragend', () => row.classList.remove('dragging'));
@@ -261,17 +257,52 @@
     });
   }
 
-  function toggleProject(i) { projects[i].hidden = !projects[i].hidden; markChanged(); renderList(); }
+  function toggleProject(i) {
+    projects[i].hidden = !projects[i].hidden;
+    markChanged();
+    renderList();
+    // Auto-save immediately on toggle
+    saveProjects();
+  }
+
+  function editProject(i) {
+    editingIndex = i;
+    const p = projects[i];
+    document.getElementById('form-title').textContent = 'EDIT PROJECT';
+    document.getElementById('new-title').value = p.title || '';
+    document.getElementById('new-cat').value = p.category || 'FILM';
+    document.getElementById('new-desc').value = p.description || '';
+    document.getElementById('new-vimeo').value = p.vimeo || '';
+    document.getElementById('new-yt').value = p.youtube || '';
+    document.getElementById('add-btn').textContent = 'SAVE EDIT';
+    document.getElementById('cancel-btn').style.display = 'block';
+    if (p.thumbnail) {
+      const preview = document.getElementById('upload-preview');
+      preview.src = p.thumbnail;
+      preview.style.display = 'block';
+      document.getElementById('upload-text').style.display = 'none';
+      document.getElementById('upload-filename').textContent = 'Current thumbnail';
+      document.getElementById('upload-filename').style.display = 'block';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelEdit() {
+    editingIndex = null;
+    document.getElementById('form-title').textContent = 'ADD NEW PROJECT';
+    document.getElementById('add-btn').textContent = 'ADD TO ARCADE';
+    document.getElementById('cancel-btn').style.display = 'none';
+    resetForm();
+  }
 
   function promptDelete(i) {
     deleteIndex = i;
     document.getElementById('del-text').textContent = `Delete "${projects[i].title}"? This can't be undone.`;
     document.getElementById('del-modal').classList.add('show');
   }
-  function closeModal() { document.getElementById('del-modal').classList.remove('show'); deleteIndex = null; }
-  function confirmDelete() { if (deleteIndex !== null) { projects.splice(deleteIndex, 1); markChanged(); renderList(); } closeModal(); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); deleteIndex = null; }
+  function confirmDelete() { if (deleteIndex !== null) { projects.splice(deleteIndex, 1); markChanged(); renderList(); saveProjects(); } closeModal('del-modal'); }
 
-  // FILE UPLOAD
   const fileInput = document.getElementById('file-input');
   const uploadArea = document.getElementById('upload-area');
   fileInput.addEventListener('change', handleFile);
@@ -283,21 +314,16 @@
     const file = fileInput.files[0];
     if (!file) return;
     uploadedFile = file;
-    uploadedUrl = null;
     document.getElementById('upload-filename').textContent = file.name;
     document.getElementById('upload-filename').style.display = 'block';
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const preview = document.getElementById('upload-preview');
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        document.getElementById('upload-text').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    } else {
-      document.getElementById('upload-text').textContent = 'VIDEO READY TO UPLOAD';
-    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const preview = document.getElementById('upload-preview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      document.getElementById('upload-text').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
   }
 
   async function uploadFile() {
@@ -306,29 +332,20 @@
     const bar = document.getElementById('upload-bar');
     progress.style.display = 'block';
     bar.style.width = '30%';
-
     const reader = new FileReader();
-    const base64 = await new Promise(res => {
-      reader.onload = e => res(e.target.result.split(',')[1]);
-      reader.readAsDataURL(uploadedFile);
-    });
-
+    const base64 = await new Promise(res => { reader.onload = e => res(e.target.result.split(',')[1]); reader.readAsDataURL(uploadedFile); });
     bar.style.width = '60%';
-
     const result = await fetch('/.netlify/functions/admin', {
       method: 'POST',
       body: JSON.stringify({ action: 'upload', password, fileBase64: base64, fileName: uploadedFile.name, mimeType: uploadedFile.type })
     }).then(r => r.json());
-
     bar.style.width = '100%';
     setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 500);
-
     if (result.error) throw new Error(result.error);
     return result.url;
   }
 
-  // ADD PROJECT
-  async function addProject() {
+  async function submitForm() {
     const title = document.getElementById('new-title').value.trim();
     const category = document.getElementById('new-cat').value;
     const desc = document.getElementById('new-desc').value.trim();
@@ -336,39 +353,46 @@
     const youtube = document.getElementById('new-yt').value.trim();
 
     if (!title) { showToast('ADD A TITLE FIRST', 'err'); return; }
-    if (!uploadedFile && !vimeo && !youtube) { showToast('ADD A FILE OR VIDEO ID', 'err'); return; }
 
     const addBtn = document.getElementById('add-btn');
     addBtn.disabled = true;
-    addBtn.textContent = 'UPLOADING...';
+    addBtn.textContent = editingIndex !== null ? 'SAVING...' : 'UPLOADING...';
 
     try {
-      let thumbnailUrl = '';
-      if (uploadedFile) {
-        thumbnailUrl = await uploadFile();
-        uploadedUrl = thumbnailUrl;
+      let thumbnailUrl = editingIndex !== null ? (projects[editingIndex].thumbnail || '') : '';
+      if (uploadedFile) thumbnailUrl = await uploadFile();
+
+      if (editingIndex !== null) {
+        // UPDATE existing
+        projects[editingIndex] = {
+          ...projects[editingIndex],
+          title, category, description: desc, thumbnail: thumbnailUrl
+        };
+        if (vimeo) projects[editingIndex].vimeo = vimeo; else delete projects[editingIndex].vimeo;
+        if (youtube) projects[editingIndex].youtube = youtube; else delete projects[editingIndex].youtube;
+        showToast('PROJECT UPDATED', 'ok');
+      } else {
+        // ADD new
+        if (!uploadedFile && !vimeo && !youtube) { showToast('ADD A FILE OR VIDEO ID', 'err'); addBtn.disabled = false; addBtn.textContent = 'ADD TO ARCADE'; return; }
+        const id = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const project = { id, title, category, thumbnail: thumbnailUrl, description: desc, hidden: false };
+        if (vimeo) project.vimeo = vimeo;
+        if (youtube) project.youtube = youtube;
+        projects.unshift(project);
+        showToast('PROJECT ADDED', 'ok');
       }
 
-      const id = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      const project = { id, title, category, thumbnail: thumbnailUrl, description: desc, hidden: false };
-      if (vimeo) project.vimeo = vimeo;
-      if (youtube) project.youtube = youtube;
-
-      projects.unshift(project);
       markChanged();
       renderList();
-      resetForm();
-      showToast('PROJECT ADDED', 'ok');
-
-      // Auto-save
+      cancelEdit();
       await saveProjects();
 
     } catch(err) {
-      showToast('UPLOAD FAILED', 'err');
+      showToast('FAILED -- TRY AGAIN', 'err');
       console.error(err);
     } finally {
       addBtn.disabled = false;
-      addBtn.textContent = 'ADD TO ARCADE';
+      addBtn.textContent = editingIndex !== null ? 'SAVE EDIT' : 'ADD TO ARCADE';
     }
   }
 
@@ -383,10 +407,8 @@
     document.getElementById('upload-filename').style.display = 'none';
     fileInput.value = '';
     uploadedFile = null;
-    uploadedUrl = null;
   }
 
-  // SAVE
   async function saveProjects() {
     const btn = document.getElementById('save-btn');
     btn.disabled = true;
@@ -398,8 +420,7 @@
       }).then(r => r.json());
       if (result.error) throw new Error(result.error);
       hasChanges = false;
-      setStatus('ALL SAVED -- DEPLOYING...', 'saved');
-      showToast('SAVED -- LIVE IN 30 SECONDS', 'ok');
+      setStatus('SAVED -- LIVE IN 30 SECONDS', 'saved');
       setTimeout(() => setStatus('ALL SAVED', 'saved'), 5000);
     } catch(err) {
       setStatus('SAVE FAILED', 'error');
@@ -410,18 +431,8 @@
   }
 
   function markChanged() { hasChanges = true; setStatus('UNSAVED CHANGES'); }
-  function setStatus(msg, type = '') {
-    const el = document.getElementById('save-status');
-    el.textContent = msg;
-    el.className = 'save-status ' + type;
-  }
-
-  function showToast(msg, type = 'ok') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = `toast show ${type}`;
-    setTimeout(() => t.className = `toast ${type}`, 2500);
-  }
+  function setStatus(msg, type = '') { const el = document.getElementById('save-status'); el.textContent = msg; el.className = 'save-status ' + type; }
+  function showToast(msg, type = 'ok') { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast show ${type}`; setTimeout(() => t.className = `toast ${type}`, 2500); }
 </script>
 </body>
 </html>
