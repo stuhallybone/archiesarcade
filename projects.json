@@ -14,7 +14,8 @@
     "category": "FILM",
     "thumbnail": "images/cbbc-thumb.jpg",
     "description": "Featured work for CBBC. Filming, editing, the lot.",
-    "featured": true
+    "featured": true,
+    "hidden": true
   },
   {
     "id": "swards-tee",
@@ -31,6 +32,7 @@
     "category": "FILM",
     "thumbnail": "",
     "description": "Early work. Where it all started.",
-    "featured": false
+    "featured": false,
+    "hidden": true
   }
 ]
