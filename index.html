@@ -613,7 +613,7 @@
       mediaEl.innerHTML = '';
 
       if (project.vimeo) {
-        mediaEl.innerHTML = `<iframe src="https://player.vimeo.com/video/${project.vimeo}" allowfullscreen></iframe>`;
+        mediaEl.innerHTML = `<iframe src="https://player.vimeo.com/video/${project.vimeo}?badge=0&autopause=0&player_id=0&app_id=58479" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
       } else if (project.youtube) {
         mediaEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${project.youtube}" allowfullscreen></iframe>`;
       } else if (project.image) {
