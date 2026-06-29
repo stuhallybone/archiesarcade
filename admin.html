@@ -349,8 +349,8 @@
     const title = document.getElementById('new-title').value.trim();
     const category = document.getElementById('new-cat').value;
     const desc = document.getElementById('new-desc').value.trim();
-    const vimeo = document.getElementById('new-vimeo').value.trim();
-    const youtube = document.getElementById('new-yt').value.trim();
+    const vimeo = document.getElementById('new-vimeo').value.trim().replace(/.*vimeo\.com\/(\d+).*/,'$1');
+    const youtube = document.getElementById('new-yt').value.trim().replace(/.*(?:youtu\.be\/|v=)([^&?]+).*/,'$1');
 
     if (!title) { showToast('ADD A TITLE FIRST', 'err'); return; }
 
