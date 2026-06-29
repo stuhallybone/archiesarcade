@@ -1,12 +1,12 @@
 [
   {
-    "id": "cbbc-showreel",
-    "title": "CBBC Showreel",
+    "id": "top-bins-slow-motion-film-test",
+    "title": "'Top Bins' Slow motion film test",
     "category": "FILM",
-    "thumbnail": "images/cbbc-thumb.jpg",
-    "description": "Featured work for CBBC. Filming, editing, the lot.",
-    "featured": true,
-    "hidden": true
+    "thumbnail": "",
+    "description": "Trying out the slow-mo record setting on iphone.",
+    "hidden": false,
+    "vimeo": "https://vimeo.com/1205455034?share=copy&fl=sv&fe=ci"
   },
   {
     "id": "swards-tee",
@@ -16,6 +16,15 @@
     "description": "T-shirt design for SWARDS. Crossed swords, clean lines. Built for print.",
     "image": "swards.jpeg",
     "featured": false
+  },
+  {
+    "id": "cbbc-showreel",
+    "title": "CBBC Showreel",
+    "category": "FILM",
+    "thumbnail": "images/cbbc-thumb.jpg",
+    "description": "Featured work for CBBC. Filming, editing, the lot.",
+    "featured": true,
+    "hidden": true
   },
   {
     "id": "archive",
