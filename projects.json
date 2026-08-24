@@ -24,7 +24,7 @@
     "thumbnail": "images/cbbc-thumb.jpg",
     "description": "Featured work for CBBC. Filming, editing, the lot.",
     "featured": true,
-    "hidden": true
+    "hidden": false
   },
   {
     "id": "archive",
