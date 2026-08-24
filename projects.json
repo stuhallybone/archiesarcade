@@ -16,14 +16,5 @@
     "description": "T-shirt design for SWARDS. Crossed swords crossed my words.",
     "image": "swards.jpeg",
     "featured": false
-  },
-  {
-    "id": "archive",
-    "title": "From the Archive",
-    "category": "FILM",
-    "thumbnail": "",
-    "description": "Early work. Where it all started.",
-    "featured": false,
-    "hidden": true
   }
 ]
