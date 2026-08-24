@@ -8,10 +8,18 @@
     "hidden": false
   },
   {
+    "id": "cube-character-design-early-sketches",
+    "title": "Cube character design early sketches",
+    "category": "DESIGN",
+    "thumbnail": "https://res.cloudinary.com/dboo2bxgj/image/upload/v1787589248/archiesarcade/521c347a-bd42-446b-9e5f-88d7dfbb7fdf-rw-1200.jpg",
+    "description": "",
+    "hidden": false
+  },
+  {
     "id": "top-bins-slow-motion-film-test",
     "title": "'Top Bins' Slow motion film test",
     "category": "FILM",
-    "thumbnail": "",
+    "thumbnail": "https://res.cloudinary.com/dboo2bxgj/image/upload/v1787589582/archiesarcade/screenshot-2026-04-05-194530.png",
     "description": "Trying out the slow-mo record setting on iphone.",
     "hidden": false,
     "vimeo": "1205455034"
@@ -21,8 +29,16 @@
     "title": "SWARDS T-Shirt",
     "category": "DESIGN",
     "thumbnail": "swards-tee.jpeg",
-    "description": "T-shirt design for SWARDS. Crossed swords crossed my words.",
+    "description": "T-shirt design for SWARDS. Crossed swords and also crossed my words in a YouTube comment... The legend was born.",
     "image": "swards.jpeg",
     "featured": false
+  },
+  {
+    "id": "the-original-archies-arcade-design",
+    "title": "The original ARCHIES ARCADE design",
+    "category": "DESIGN",
+    "thumbnail": "https://res.cloudinary.com/dboo2bxgj/image/upload/v1787589484/archiesarcade/d9fc13fe-6859-47ef-8991-0dba1c7f4928.jpg",
+    "description": "I made this pixel arcade cabinet based on our own real arcade we want to create. The Archie's Arcade logo happened as I was messing around with the name at the top.",
+    "hidden": false
   }
 ]
