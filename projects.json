@@ -18,15 +18,6 @@
     "featured": false
   },
   {
-    "id": "cbbc-showreel",
-    "title": "CBBC Showreel",
-    "category": "FILM",
-    "thumbnail": "images/cbbc-thumb.jpg",
-    "description": "Featured work for CBBC. Filming, editing, the lot.",
-    "featured": true,
-    "hidden": false
-  },
-  {
     "id": "archive",
     "title": "From the Archive",
     "category": "FILM",
