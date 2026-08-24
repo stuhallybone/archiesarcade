@@ -178,6 +178,14 @@
   let dragSrcIndex = null;
   let uploadedFile = null;
   let editingIndex = null;
+  let isUploading = false;
+
+  window.addEventListener('beforeunload', (e) => {
+    if (hasChanges || isUploading) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
 
   function login() {
     password = document.getElementById('pw').value;
@@ -326,21 +334,26 @@
 
   async function uploadFile() {
     if (!uploadedFile) return null;
+    isUploading = true;
     const progress = document.getElementById('upload-progress');
     const bar = document.getElementById('upload-bar');
     progress.style.display = 'block';
     bar.style.width = '30%';
-    const reader = new FileReader();
-    const base64 = await new Promise(res => { reader.onload = e => res(e.target.result.split(',')[1]); reader.readAsDataURL(uploadedFile); });
-    bar.style.width = '60%';
-    const result = await fetch('/.netlify/functions/admin', {
-      method: 'POST',
-      body: JSON.stringify({ action: 'upload', password, fileBase64: base64, fileName: uploadedFile.name, mimeType: uploadedFile.type })
-    }).then(r => r.json());
-    bar.style.width = '100%';
-    setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 500);
-    if (result.error) throw new Error(result.error);
-    return result.url;
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise(res => { reader.onload = e => res(e.target.result.split(',')[1]); reader.readAsDataURL(uploadedFile); });
+      bar.style.width = '60%';
+      const result = await fetch('/.netlify/functions/admin', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'upload', password, fileBase64: base64, fileName: uploadedFile.name, mimeType: uploadedFile.type })
+      }).then(r => r.json());
+      bar.style.width = '100%';
+      setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 500);
+      if (result.error) throw new Error(result.error);
+      return result.url;
+    } finally {
+      isUploading = false;
+    }
   }
 
   async function submitForm() {
