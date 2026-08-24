@@ -1,5 +1,13 @@
 [
   {
+    "id": "the-football-academy-cbbc",
+    "title": "The Football Academy CBBC",
+    "category": "FILM",
+    "thumbnail": "https://res.cloudinary.com/dboo2bxgj/image/upload/v1787585933/archiesarcade/78a4c52b-94d0-42cf-8308-12444192679a-rw-1920.jpg",
+    "description": "The CBBC crew followed my journey becoming a CP Spurs player and the tough decision to focus on studying for my GSCEs instead of playing at the CP Cup.",
+    "hidden": false
+  },
+  {
     "id": "top-bins-slow-motion-film-test",
     "title": "'Top Bins' Slow motion film test",
     "category": "FILM",
