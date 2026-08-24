@@ -261,8 +261,6 @@
     projects[i].hidden = !projects[i].hidden;
     markChanged();
     renderList();
-    // Auto-save immediately on toggle
-    saveProjects();
   }
 
   function editProject(i) {
@@ -301,7 +299,7 @@
     document.getElementById('del-modal').classList.add('show');
   }
   function closeModal(id) { document.getElementById(id).classList.remove('show'); deleteIndex = null; }
-  function confirmDelete() { if (deleteIndex !== null) { projects.splice(deleteIndex, 1); markChanged(); renderList(); saveProjects(); } closeModal('del-modal'); }
+  function confirmDelete() { if (deleteIndex !== null) { projects.splice(deleteIndex, 1); markChanged(); renderList(); } closeModal('del-modal'); }
 
   const fileInput = document.getElementById('file-input');
   const uploadArea = document.getElementById('upload-area');
@@ -370,7 +368,7 @@
         };
         if (vimeo) projects[editingIndex].vimeo = vimeo; else delete projects[editingIndex].vimeo;
         if (youtube) projects[editingIndex].youtube = youtube; else delete projects[editingIndex].youtube;
-        showToast('PROJECT UPDATED', 'ok');
+        showToast('PROJECT UPDATED -- HIT SAVE CHANGES', 'ok');
       } else {
         // ADD new
         if (!uploadedFile && !vimeo && !youtube) { showToast('ADD A FILE OR VIDEO ID', 'err'); addBtn.disabled = false; addBtn.textContent = 'ADD TO ARCADE'; return; }
@@ -379,13 +377,12 @@
         if (vimeo) project.vimeo = vimeo;
         if (youtube) project.youtube = youtube;
         projects.unshift(project);
-        showToast('PROJECT ADDED', 'ok');
+        showToast('PROJECT ADDED -- HIT SAVE CHANGES', 'ok');
       }
 
       markChanged();
       renderList();
       cancelEdit();
-      await saveProjects();
 
     } catch(err) {
       showToast('FAILED -- TRY AGAIN', 'err');
