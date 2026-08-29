@@ -1,5 +1,13 @@
 [
   {
+    "id": "a-is-for-arcade-archie-art",
+    "title": "A is for Arcade Archie Art",
+    "category": "DESIGN",
+    "thumbnail": "https://res.cloudinary.com/dboo2bxgj/image/upload/v1788035156/archiesarcade/img-5198.jpg",
+    "description": "Graffiti A @ Leafe Street tunnels in Waterloo",
+    "hidden": false
+  },
+  {
     "id": "the-football-academy-cbbc",
     "title": "The Football Academy CBBC",
     "category": "FILM",
